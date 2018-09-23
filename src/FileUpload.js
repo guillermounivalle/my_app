@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
-import firebase from 'firebase';
+
+
+
 
 class FileUpload extends Component{
   constructor(){
@@ -7,37 +9,12 @@ class FileUpload extends Component{
     //Estados del componente
     this.state = {
       uploadValue: 0,
-      picture:null
     };
 
-    this.handleOnUpload = this.handleOnUpload.bind(this);
+  
   }
 
-  //Trabajamos con las opciones de firebase para subir imagenes
-  handleOnUpload(event){
-      const file = event.target.files[0];
-      const storageRef = firebase.storage().ref(`/Photos/${file.name}`);
-      //const task = storageRef.put(file);
-      const task = storageRef.child(`${file.name}`).put(file);
-
-      task.on('state_changed', snapshot => {
-        let percentage = (snapshot.bytesTransferred / snapshot.totalbytes) * 100;
-        this.setState({
-          uploadValue : percentage
-        })
-      }, error => { console.log(error.message) 
-      }, () => {
-        //Cuando se carga por completo entonces hace esto
-        console.log(task.snapshot);
-        storageRef.child(file.name).getDownloadURL().then((url) => {
-          this.setState({
-            uploadValue: 100,
-            picture: url       
-          });
-        });
-      });
-   }
-
+  
 
 
   //Aquí pintamos el html de este componente
@@ -53,9 +30,7 @@ class FileUpload extends Component{
       <div>
         <progress value= {this.state.uploadValue} max ="100"></progress> 
         <br/>
-        <input type="file" onChange={this.handleOnUpload}/>
-        <br/>
-        <img width="320" src= {this.state.picture} alt=""/>
+        <input type="file" onChange={this.props.onUpload}/>
       </div>
     );
   }
